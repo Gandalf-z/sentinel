@@ -6,6 +6,10 @@ Sentinel 控制台是流量控制、熔断降级规则统一配置和管理的�
 
 ## 1. 编译和启动
 
+### 1.0
+
+修改application.properties文件指定nacos服务的地址与namespace
+
 ### 1.1 如何编译
 
 使用如下命令将代码打包成一个 fat jar:
