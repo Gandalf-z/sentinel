@@ -1,5 +1,6 @@
 package com.alibaba.csp.sentinel.dashboard.rule.nacos;
 
+import com.alibaba.csp.sentinel.dashboard.controller.DegradeController;
 import com.alibaba.csp.sentinel.dashboard.datasource.entity.gateway.ApiDefinitionEntity;
 import com.alibaba.csp.sentinel.dashboard.datasource.entity.gateway.GatewayFlowRuleEntity;
 import com.alibaba.csp.sentinel.dashboard.datasource.entity.rule.*;
@@ -8,9 +9,12 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.nacos.api.PropertyKeyConst;
 import com.alibaba.nacos.api.config.ConfigFactory;
 import com.alibaba.nacos.api.config.ConfigService;
-import org.springframework.beans.factory.annotation.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 
 import java.util.List;
 import java.util.Properties;
@@ -23,16 +27,20 @@ import java.util.Properties;
 @Configuration
 public class NacosConfig {
 
-    @Value("${nacos-server.address}")
-    private String nacosServerAddress;
-    @Value("${nacos.namespace}")
-    private String namespace;
+    @Autowired
+    private Environment evn;
+    private final Logger logger = LoggerFactory.getLogger(DegradeController.class);
 
     @Bean
     public ConfigService nacosConfigService() throws Exception {
         Properties properties = new Properties();
-        properties.put(PropertyKeyConst.SERVER_ADDR, nacosServerAddress);
-        properties.put(PropertyKeyConst.NAMESPACE,namespace);
+        try{
+            properties.put(PropertyKeyConst.SERVER_ADDR, evn.getProperty(PropertyKeyConst.SERVER_ADDR));
+            properties.put(PropertyKeyConst.NAMESPACE, evn.getProperty(PropertyKeyConst.NAMESPACE));
+        }catch (NullPointerException e){
+            logger.error("请指定serverAddr与namespace地址",e);
+            System.exit(0);
+        }
         return ConfigFactory.createConfigService(properties);
     }
 
