@@ -181,6 +181,7 @@ public class AuthorityRuleController {
         List<DegradeRuleEntity> rules = repository.findAllByApp(app);
         rulePublisher.publish(app, rules);
     }*/
+
     private void publishRules(String app) throws Exception {
         List<AuthorityRuleEntity> rules = repository.findAllByApp(app);
         rulePublisher.publish(app, rules);
